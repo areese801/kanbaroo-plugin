@@ -44,20 +44,11 @@ tools and (optionally) tie them into a [`trusty-cage`](https://github.com/areese
 
 ## Install the plugin
 
-Add this repo as a Claude Code marketplace and enable the plugin by
-editing `~/.claude.json`:
+Run these commands inside a [Claude Code](https://claude.ai/code) session:
 
-```json
-{
-  "extraKnownMarketplaces": {
-    "kanbaroo-plugin": {
-      "source": { "repo": "areese801/kanbaroo-plugin", "source": "github" }
-    }
-  },
-  "enabledPlugins": {
-    "kanbaroo@kanbaroo-plugin": true
-  }
-}
+```
+/plugin marketplace add areese801/kanbaroo-plugin
+/plugin install kanbaroo@kanbaroo-plugin
 ```
 
 Restart Claude Code; both skills load automatically.
@@ -67,22 +58,6 @@ SKILL.md is matched against the user's message at session time, so
 the workflow skill only fires when the user mentions Kanbaroo
 concepts and the cage-bridge skill only fires when both Kanbaroo and
 the cage-orchestrator are active.
-
-### Local development install
-
-If you're hacking on the plugin itself, clone this repo and symlink
-into Claude Code's plugin cache instead of going through the
-marketplace:
-
-```bash
-git clone git@github.com:areese801/kanbaroo-plugin.git \
-          ~/projects/personal/kanbaroo-plugin
-ln -s ~/projects/personal/kanbaroo-plugin \
-      ~/.claude/plugins/cache/kanbaroo-plugin
-```
-
-Restart Claude Code. Edits to the SKILL.md files take effect on the
-next session restart.
 
 ## When each skill activates
 
@@ -97,9 +72,11 @@ Kanbaroo MCP wired up; cage-orchestrator runs unchanged in that case.
 ## Troubleshooting
 
 - **Skills don't appear in a fresh Claude Code session.** Confirm the
-  marketplace entry resolves. Look for the plugin under
-  `~/.claude/plugins/cache/kanbaroo-plugin/`. Confirm Claude Code was
-  fully restarted, not just reloaded.
+  marketplace and plugin entries are present in `~/.claude.json`
+  under `extraKnownMarketplaces` and `enabledPlugins` (the
+  `/plugin` slash commands write both). Look for the cached plugin
+  under `~/.claude/plugins/cache/kanbaroo-plugin/plugins/kanbaroo/`.
+  Confirm Claude Code was fully restarted, not just reloaded.
 - **The workflow skill fires but `mcp__kanbaroo__*` tools 404.**
   Confirm the project has a `.mcp.json` at its root with a
   `kanbaroo` entry and that the running Kanbaroo server is

@@ -39,19 +39,42 @@ README here, mirror that change in the Kanbaroo monorepo.
 
 ## Repo Layout
 
+This repo is a **Claude Code marketplace** that ships one plugin
+(`kanbaroo`). The marketplace manifest lives at the repo root; the
+plugin itself lives in a subdir under `plugins/`. Mirrors the layout
+of [`trusty-cage-plugin`](https://github.com/areese801/trusty-cage-plugin).
+
 ```
 .claude-plugin/
-  plugin.json          # plugin manifest (name, version, repo, license, keywords)
-skills/
-  kanbaroo-workflow/
-    SKILL.md           # runtime guidance for outer Claude
-  kanbaroo-cage-bridge/
-    SKILL.md           # runtime guidance for outer Claude when both
+  marketplace.json     # marketplace manifest (name, owner, plugins[])
+plugins/
+  kanbaroo/
+    .claude-plugin/
+      plugin.json      # plugin manifest (name, version, repo, license, keywords)
+    skills/
+      kanbaroo-workflow/
+        SKILL.md       # runtime guidance for outer Claude
+      kanbaroo-cage-bridge/
+        SKILL.md       # runtime guidance for outer Claude when both
                        # Kanbaroo and trusty-cage are active
 LICENSE
 README.md
 CLAUDE.md              # this file
 ```
+
+**Two manifests, two purposes:**
+
+- `.claude-plugin/marketplace.json` advertises the marketplace + an
+  index of the plugins it contains. `/plugin marketplace add` reads
+  this when registering the marketplace.
+- `plugins/kanbaroo/.claude-plugin/plugin.json` is the plugin's own
+  manifest (version, license, keywords). `/plugin install` reads
+  this when installing the plugin.
+
+If you add a new plugin to this repo (unlikely but possible), add a
+new entry under `marketplace.json`'s `plugins` array AND create a
+corresponding `plugins/<new-plugin-name>/` directory with its own
+`.claude-plugin/plugin.json`.
 
 ## SKILL.md Conventions
 
@@ -176,15 +199,38 @@ There is no automated test runner for skill content. Validate by:
 ## Quick Commands
 
 ```bash
-# Local dev install (symlinked, so edits are live on next restart)
-ln -s "$(pwd)" ~/.claude/plugins/cache/kanbaroo-plugin
-
-# Validate the manifest JSON
-jq -e . .claude-plugin/plugin.json
+# Validate both manifests
+jq -e . .claude-plugin/marketplace.json
+jq -e . plugins/kanbaroo/.claude-plugin/plugin.json
 
 # See which skills the plugin currently ships
-ls -d skills/*/
+ls -d plugins/kanbaroo/skills/*/
 
 # Tag a release after merge
 git tag v<version> && git push --tags
 ```
+
+## Local Dev Install
+
+To iterate on skill content without going through the marketplace:
+
+```bash
+# Add this repo as a marketplace (one-time)
+/plugin marketplace add areese801/kanbaroo-plugin
+
+# Install the plugin (one-time)
+/plugin install kanbaroo@kanbaroo-plugin
+```
+
+The `/plugin` slash commands run inside any Claude Code session.
+After install, edits to SKILL.md files in this repo do NOT
+auto-propagate — you'll need to either pull the marketplace
+again or symlink the plugin subdir into the cache for live
+iteration:
+
+```bash
+ln -s "$(pwd)/plugins/kanbaroo" \
+      ~/.claude/plugins/cache/kanbaroo-plugin/plugins/kanbaroo
+```
+
+Restart Claude Code after either approach.
