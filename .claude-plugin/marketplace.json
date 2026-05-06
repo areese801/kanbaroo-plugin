@@ -1,0 +1,13 @@
+{
+  "name": "kanbaroo-plugin",
+  "owner": {
+    "name": "Adam Reese"
+  },
+  "plugins": [
+    {
+      "name": "kanbaroo",
+      "source": "./plugins/kanbaroo",
+      "description": "Skills for working with Kanbaroo via MCP, including a bridge that ties cage-orchestrator dispatches to Kanbaroo stories"
+    }
+  ]
+}
