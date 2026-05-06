@@ -1,0 +1,10 @@
+{
+  "name": "kanbaroo",
+  "description": "Skills for working with Kanbaroo via MCP, including a bridge that ties cage-orchestrator dispatches to Kanbaroo stories",
+  "version": "0.3.0",
+  "author": { "name": "Adam Reese" },
+  "repository": "https://github.com/areese801/kanbaroo-plugin",
+  "homepage": "https://github.com/areese801/kanbaroo-plugin",
+  "license": "MIT",
+  "keywords": ["kanbaroo", "kanban", "trusty-cage", "agents", "mcp"]
+}
