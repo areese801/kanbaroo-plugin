@@ -9,7 +9,7 @@ the runtime guidance for outer Claude.
 ## Repo Purpose
 
 This repo ships a single Claude Code plugin: `kanbaroo`. The plugin
-bundles two agent skills:
+bundles three agent skills:
 
 - `kanbaroo-workflow` — teaches outer Claude how to drive a Kanbaroo
   instance via its MCP server (read the board, create / comment /
@@ -17,6 +17,12 @@ bundles two agent skills:
 - `kanbaroo-cage-bridge` — augments [`trusty-cage`](https://github.com/areese801/trusty-cage)'s
   `cage-orchestrator` skill flow when both Kanbaroo and trusty-cage are
   active in the same session. Mirrors cage dispatches onto a story.
+- `kanbaroo-iterate` — continuous improvement loop for Kanbaroo
+  itself. The meta-pair to `kanbaroo-workflow`: workflow USES
+  Kanbaroo, iterate IMPROVES it based on what surfaces during use.
+  Models on `cage-iterate`'s structure (Steps 1-7 + rules &
+  guardrails) but with a Surface Routing table that maps each
+  friction type to the right repo + cage-or-direct path.
 
 This repo is **markdown + JSON only** — there is no Python, no build,
 no test runner. The plugin is the SKILL.md files plus the manifest.
@@ -57,6 +63,10 @@ plugins/
       kanbaroo-cage-bridge/
         SKILL.md       # runtime guidance for outer Claude when both
                        # Kanbaroo and trusty-cage are active
+      kanbaroo-iterate/
+        SKILL.md       # runtime guidance for the iteration loop —
+                       # improving Kanbaroo itself based on observed
+                       # friction
 LICENSE
 README.md
 CLAUDE.md              # this file

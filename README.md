@@ -21,6 +21,14 @@ tools and (optionally) tie them into a [`trusty-cage`](https://github.com/areese
   posts a summary on `tc export`, and captures revision instructions
   before they're sent to the cage's inbox. No-ops gracefully when
   Kanbaroo isn't configured.
+- **`kanbaroo-iterate`** — continuous improvement loop for Kanbaroo
+  itself. Runs a real Kanbaroo workflow as the test workload,
+  captures friction across every surface (skill text, MCP tools,
+  REST API, CLI, TUI, web UI, spec), plans improvements, implements
+  them via the appropriate repo + cage pattern, and re-tests. Use
+  when you want to make Kanbaroo measurably more pleasant to use,
+  not for one-off feature requests (those become stories on the
+  board via `kanbaroo-workflow`).
 
 ## Prerequisites
 
@@ -65,6 +73,7 @@ the cage-orchestrator are active.
 |-------|---------------|
 | `kanbaroo-workflow` | The user references a Kanbaroo story human ID, asks about the board, or wants to create / comment / transition stories. |
 | `kanbaroo-cage-bridge` | The session has both `mcp__kanbaroo__*` tools and the trusty-cage `cage-orchestrator` skill active, and a cage dispatch is about to be (or is being) driven. |
+| `kanbaroo-iterate` | The user wants to improve Kanbaroo itself ("let's iterate", "polish the workflow", "tighten the MCP"), or has just finished a real Kanbaroo session and wants to capture observed friction in a structured loop. |
 
 The bridge skill no-ops automatically on projects without the
 Kanbaroo MCP wired up; cage-orchestrator runs unchanged in that case.
