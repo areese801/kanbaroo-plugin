@@ -9,7 +9,7 @@ the runtime guidance for outer Claude.
 ## Repo Purpose
 
 This repo ships a single Claude Code plugin: `kanbaroo`. The plugin
-bundles two agent skills:
+bundles three agent skills:
 
 - `kanbaroo-workflow` — teaches outer Claude how to drive a Kanbaroo
   instance via its MCP server (read the board, create / comment /
@@ -17,6 +17,12 @@ bundles two agent skills:
 - `kanbaroo-cage-bridge` — augments [`trusty-cage`](https://github.com/areese801/trusty-cage)'s
   `cage-orchestrator` skill flow when both Kanbaroo and trusty-cage are
   active in the same session. Mirrors cage dispatches onto a story.
+- `kanbaroo-iterate` — continuous improvement loop for Kanbaroo
+  itself. The meta-pair to `kanbaroo-workflow`: workflow USES
+  Kanbaroo, iterate IMPROVES it based on what surfaces during use.
+  Models on `cage-iterate`'s structure (Steps 1-7 + rules &
+  guardrails) but with a Surface Routing table that maps each
+  friction type to the right repo + cage-or-direct path.
 
 This repo is **markdown + JSON only** — there is no Python, no build,
 no test runner. The plugin is the SKILL.md files plus the manifest.
@@ -57,6 +63,10 @@ plugins/
       kanbaroo-cage-bridge/
         SKILL.md       # runtime guidance for outer Claude when both
                        # Kanbaroo and trusty-cage are active
+      kanbaroo-iterate/
+        SKILL.md       # runtime guidance for the iteration loop —
+                       # improving Kanbaroo itself based on observed
+                       # friction
 LICENSE
 README.md
 CLAUDE.md              # this file
@@ -126,7 +136,12 @@ with the kinds of phrases the skill should and should not match.
 
 ## Versioning
 
-This plugin follows [Semantic Versioning](https://semver.org/).
+The version lives in **one** place:
+`plugins/kanbaroo/.claude-plugin/plugin.json`. There is no PyPI
+publish step — the marketplace installs from a tagged commit on
+GitHub.
+
+This plugin follows [Semantic Versioning](https://semver.org/):
 
 - **MAJOR**: a skill is removed, or its activation contract changes
   in a way that breaks existing workflows.
@@ -138,14 +153,32 @@ Plugin version usually matches the Kanbaroo release whose MCP tool
 surface it targets, but they are not enforced to be identical. When
 they diverge, document the supported Kanbaroo range in the README.
 
+**Always bump the version when skill files change.** Without a bump,
+users do not receive updates: Claude Code's plugin cache keys on the
+version field, so a same-version pull is treated as a no-op and the
+new SKILL.md content never reaches anyone's session. This rule
+applies even to small wording fixes — if you'd want users to see
+the change, you need a PATCH bump at minimum. The `marketplace.json`
+file does NOT carry a version (and shouldn't); only `plugin.json`'s
+version drives the cache.
+
+Add a `CHANGELOG.md` entry under the new version heading in the
+**same PR** as the version bump. Drift between `CHANGELOG.md` and
+`plugin.json` is the most common review-time miss.
+
 ## Release Process
 
-1. Bump `version` in `.claude-plugin/plugin.json`.
-2. Update README + skill bodies as appropriate.
-3. Commit on a feature branch, open a PR, get the diff reviewed.
-4. After merge, tag: `git tag v<version> && git push --tags`.
-5. No PyPI step — Claude Code's marketplace mechanism reads the
-   tagged commit directly via the GitHub source.
+1. Update SKILL.md / README / etc. as needed for the change.
+2. Bump `version` in `plugins/kanbaroo/.claude-plugin/plugin.json`.
+3. Add a matching `CHANGELOG.md` entry under the new version
+   heading.
+4. Commit on a feature branch, open a PR, get the diff reviewed.
+5. **The human operator tags the merge commit** (e.g.
+   `git tag v0.4.0 && git push --tags`) — agents should not push
+   tags from inside a cage or otherwise.
+6. Marketplace installs pick up the new version on the next
+   `/plugin update kanbaroo@kanbaroo-plugin` (or uninstall +
+   reinstall).
 
 ## Testing a Skill Change
 
