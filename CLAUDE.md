@@ -173,9 +173,22 @@ Add a `CHANGELOG.md` entry under the new version heading in the
 3. Add a matching `CHANGELOG.md` entry under the new version
    heading.
 4. Commit on a feature branch, open a PR, get the diff reviewed.
-5. **The human operator tags the merge commit** (e.g.
-   `git tag v0.4.0 && git push --tags`) — agents should not push
-   tags from inside a cage or otherwise.
+5. **After the merge, tag the merge commit and push the tag.**
+   When an agent is doing this work in the main conversation, the
+   agent — not the user — drives the tag flow:
+   - Sync local `main` with `origin`.
+   - `git tag v<version>` against the merge commit (verify
+     `plugin.json` at that commit reads `<version>` before tagging
+     — don't tag the wrong commit).
+   - Show the tag + target commit to the user and ask for
+     confirmation: "push it?"
+   - On consent: `git push origin v<version>`.
+
+   Agents inside a trusty-cage container must NOT push tags (no
+   credentials, blast-radius reasons). The tag step always lives
+   on the host, post-merge, with explicit confirmation. Don't
+   punt this step to the user as a manual chore — that creates a
+   gap where the merge ships but the tag never lands.
 6. Marketplace installs pick up the new version on the next
    `/plugin update kanbaroo@kanbaroo-plugin` (or uninstall +
    reinstall).
